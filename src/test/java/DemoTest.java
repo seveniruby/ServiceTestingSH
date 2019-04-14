@@ -1,5 +1,7 @@
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.HashMap;
 
@@ -15,8 +17,13 @@ public class DemoTest {
         assertTrue(false);
     }
 
-    @Test
-    void sendMessage(){
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "测试中文",
+            "おはようございます",
+            "<script>alert(77)</script>",
+            "欢迎大家加入TesterHome技术Workshop <a href=\"https://testerhome.com\">TesterHomne社区论坛</a>" })
+    void sendMessage(String msg){
         HashMap<String, Object> data=new HashMap<String, Object>();
         data.put("touser", "@all");
         data.put("toparty", "");
@@ -26,7 +33,7 @@ public class DemoTest {
         data.put("safe", 0);
 
         HashMap<String, Object> content=new HashMap<String, Object>();
-        content.put("content", "欢迎大家加入TesterHome技术Workshop <a href=\\\"https://testerhome.com\\\">TesterHomne社区论坛</a>");
+        content.put("content", msg);
         data.put("text", content);
         given().log().all()
                 .queryParam("access_token", Config.getInstance().token)
